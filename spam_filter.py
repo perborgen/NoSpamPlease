@@ -3,25 +3,20 @@ import numpy as np
 import pandas as pd
 import re
 from sklearn.feature_extraction.text import CountVectorizer
-
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import neighbors
-
 from nltk.stem.snowball import SnowballStemmer
 from nltk.corpus import stopwords
+
+
 stemmer = SnowballStemmer('english')
 stopWords = stopwords.words('english')
 vectorizer = CountVectorizer(analyzer="word")
-example = "Thanks for your subscription to Ringtone UK your mobile will be charged £5/month Please confirm by replying YES or NO. If you reply NO you will not be charged"
-
 data = pd.read_csv('data/data.csv',header=0)
-
 data_texts = data["text"]
-
 data_labels = data["label"]
-data_labels = np.array(data_labels)
 data_labels = [0 if x == "spam" else 1 for x in data_labels]
-data_labels = np.array(data_labels)
+
 
 def cleanUp(texts):
 	clean_texts = []
@@ -43,7 +38,6 @@ def vectorize(text):
 	return vectorzed_data
 
 
-
 def sliceData(data,labels,num_train):
 	train_data = []
 	train_labels = []
@@ -61,20 +55,16 @@ def sliceData(data,labels,num_train):
 	return {'train_data': train_data, 'train_labels': train_labels, 'test_data': test_data, 'test_labels': test_labels}
 
 
-
 clean_data = cleanUp(data_texts)
 vectorized_data = vectorize(clean_data)
-
-print 'vectorized_data[0]: ', vectorized_data[0]
-print len(vectorized_data[0])
 all_data = sliceData(vectorized_data[0:500],data_labels,400)
 
+train_data = all_data['train_data']
+train_labels = all_data['train_labels']
+test_data = all_data['test_data']
+test_labels = all_data['test_labels']
 
-train_data = np.array(all_data['train_data'])
-train_labels = np.array(all_data['train_labels'])
-test_data = np.array(all_data['test_data'])
-test_labels = np.array(all_data['test_labels'])
-
+# UNCOMMENT A CLASSIFICATION TO FIT THE ALGORITHM
 
 # -------------> KNN with 3000 training set, no extra features - score:  0.912519440124
 #knn = neighbors.KNeighborsClassifier()
@@ -104,33 +94,22 @@ test_labels = np.array(all_data['test_labels'])
 
 
 
-
-
-
-
-
-
 ## FEATURE ENGINEERING
-
 #FEATURES = ["char_length", "upperCaseWords"]
 
 
 #char_length = [len(x) for x in texts]
-upperCaseWords = []
-## find upper case words longer than 1 character
-for text in data_texts[0:100]:
-	count = 0
-	words = text.split()
-	for word in words:
-		if word.isupper():
-			if len(word) > 1:
-				count +=1
-				#print 'upperword: ', word
-				#print 'text: ', text
-	length_of_word = len(words)
-	upperCaseRatio = float(count) / float(length_of_word)
-	upperCaseWords.append(upperCaseRatio)
+#upperCaseWords = []
+#for text in data_texts[0:100]:
+#	count = 0
+#	words = text.split()
+#	for word in words:
+#		if word.isupper():
+#			if len(word) > 1:
+#				count +=1
+#	length_of_word = len(words)
+#	upperCaseRatio = float(count) / float(length_of_word)
+#	upperCaseWords.append(upperCaseRatio)
 
-print upperCaseWords
 
 
