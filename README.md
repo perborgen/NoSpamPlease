@@ -7,10 +7,10 @@ The data consists of 3375 ham messages and 475 spam messages. More info [here.](
 <table>
 	<tr>
 		<td>
-			Algorithm
+			**Algorithm**
 		</td>
 		<td>
-			Score
+			**Score**
 		</td>
 	</tr>
 	<tr>
