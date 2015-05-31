@@ -32,10 +32,10 @@ def cleanUp(texts):
 
 
 def vectorize(text):
-	vectorzed_data = vectorizer.fit(text)
-	vectorzed_data = vectorizer.transform(text)
-	vectorzed_data = vectorzed_data.toarray()
-	return vectorzed_data
+	vectorized_data = vectorizer.fit(text)
+	vectorized_data = vectorizer.transform(text)
+	vectorized_data = vectorized_data.toarray()
+	return vectorized_data
 
 
 def sliceData(data,labels,num_train):
@@ -55,10 +55,30 @@ def sliceData(data,labels,num_train):
 	return {'train_data': train_data, 'train_labels': train_labels, 'test_data': test_data, 'test_labels': test_labels}
 
 
+
 clean_data = cleanUp(data_texts)
 vectorized_data = vectorize(clean_data)
-all_data = sliceData(vectorized_data[0:500],data_labels,400)
 
+
+
+## FEATURE ENGINEERING - adding the length of the sms (divided by 30) as a feature
+char_length = [int(len(x)/30) for x in data_texts]
+new_vectorized_data = []
+
+for i in xrange(len(vectorized_data)):
+	sample = vectorized_data[i]
+	sample = np.append(sample, char_length[i])
+	new_vectorized_data.append(sample)
+new_vectorized_data = np.array(new_vectorized_data)
+
+# with feature engineering (The score jumps from 0.87-0.91 to around 0.95!!!)
+all_data = sliceData(new_vectorized_data,data_labels,3000)
+
+
+
+
+# without feature engineering
+#all_data = sliceData(vectorized_data,data_labels,3000)
 train_data = all_data['train_data']
 train_labels = all_data['train_labels']
 test_data = all_data['test_data']
@@ -67,11 +87,11 @@ test_labels = all_data['test_labels']
 # UNCOMMENT A CLASSIFICATION TO FIT THE ALGORITHM
 
 # -------------> KNN with 3000 training set, no extra features - score:  0.912519440124
-#knn = neighbors.KNeighborsClassifier()
-#print 'about to fit'
-#knn.fit(train_data, train_labels)
-#score = knn.score(test_data,test_labels)
-#print 'score: ', score
+knn = neighbors.KNeighborsClassifier()
+print 'about to fit'
+knn.fit(train_data, train_labels)
+score = knn.score(test_data,test_labels)
+print 'score: ', score
 
 
 # --------------> RandomForest with 3000 training set, no extra features - score: 0.96967340591
@@ -94,11 +114,7 @@ test_labels = all_data['test_labels']
 
 
 
-## FEATURE ENGINEERING
-#FEATURES = ["char_length", "upperCaseWords"]
 
-
-#char_length = [len(x) for x in texts]
 #upperCaseWords = []
 #for text in data_texts[0:100]:
 #	count = 0
